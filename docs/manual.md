@@ -2601,7 +2601,7 @@ function timer_del(name)
 Получить информацию о таймере.
 
 ```
-function timer_del(name)
+function timer_info(name)
 ```
 
 В случае успеха возвращается таблица, в случае неудачи - nil.
