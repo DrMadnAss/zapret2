@@ -2478,11 +2478,11 @@ bool set_socket_buffers(int fd, int rcvbuf, int sndbuf)
 	return true;
 }
 
-bool make_writeable_dir()
+bool make_writable_dir()
 {
 	char wdir[PATH_MAX], *wrdir;
-	if (*params.writeable_dir)
-		wrdir = params.writeable_dir;
+	if (*params.writable_dir)
+		wrdir = params.writable_dir;
 	else
 	{
 #ifdef __CYGWIN__
@@ -2516,6 +2516,6 @@ bool make_writeable_dir()
 		}
 	}
 #endif
-	if (b) setenv("WRITEABLE",wrdir,1);
+	if (b) setenv("WRITABLE",wrdir,1);
 	return b;
 }

@@ -190,8 +190,8 @@ struct params_s
 	uint64_t payload_disable;
 
 	struct str_list_head lua_init_scripts;
-	bool writeable_dir_enable;
-	char writeable_dir[PATH_MAX];
+	bool writable_dir_enable;
+	char writable_dir[PATH_MAX];
 
 	timer_pool *timers;
 	bool timers_dirty; // changed something in timers

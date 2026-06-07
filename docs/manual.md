@@ -715,7 +715,7 @@ nfqws2 использует стандартный парсер getopt_long_only
  --reasm-disable=[type[,type]]                          ; отключить сборку фрагментов для списка пейлоадов : tls_client_hello quic_initial . без аргумента - отключить reasm для всего.
 
 DESYNC ENGINE INIT:
- --writeable[=<dir_name>]                               ; создать директорию для Lua с разрешением записи и поместить путь к ней в переменную env "WRITEABLE" (только одна директория)
+ --writable[=<dir_name>]                                ; создать директорию для Lua с разрешением записи и поместить путь к ней в переменную env "WRITABLE" (только одна директория)
  --blob=<item_name>:[+ofs]@<filename>|0xHEX             ; загрузить бинарный файл или hex строку в переменную Lua <item_name>. +ofs задает смещение от начала файла
  --lua-init=@<filename>|<lua_text>                      ; однократно при старте выполнить Lua код из строки или из файла. поддерживаются сжатые gzip файлы. автоматически проверяется "<filename>.gz"
  --lua-gc=<int>                                         ; интервал вызова сборщика мусора Lua в секундах. 0 отключает периодический вызов.
@@ -1139,8 +1139,8 @@ Windows :
 - Безвозвратно убираются все Se* привилегии из токена, кроме SeChangeNotifyPrivilege.
 - С помощью Job запрещается создание дочерних процессов и ограничивается взаимодействие с десктопом - clipboard, change desktop, change display settings и тд
 
-Есть простой способ передать Lua коду каталог, доступный на запись - параметр `--writeable[=<dirname>]`.
-nfqws2 создает каталог, назначает на него такие права, чтобы Lua код смог писать туда файлы, передает имя директории в переменной env `WRITEABLE`.
+Есть простой способ передать Lua коду каталог, доступный на запись - параметр `--writable[=<dirname>]`.
+nfqws2 создает каталог, назначает на него такие права, чтобы Lua код смог писать туда файлы, передает имя директории в переменной env `WRITABLE`.
 Если dirname не задан, на Windows создается каталог внутри `%USERPROFILE%/AppData/LocalLow`
 
 Со стороны Lua убираются опасные функции - os.execute, io.popen, package.loadlib и модуль debug.
@@ -1844,8 +1844,8 @@ data задается при запуске таймера через [timer_set
 
 | env       | Назначение |
 | :-------- |:---------- |
-| WRITEABLE | Директория, доступная на запись Lua. Результат опции `--writeable` |
-| APPDATALOW | (только Windows) Расположение AppData для low mandatory level. Сюда тоже можно записывать, но предпочтительно использовать `--writeable` для кросс-платформенности. |
+| WRITABLE | Директория, доступная на запись Lua. Результат опции `--writable` |
+| APPDATALOW | (только Windows) Расположение AppData для low mandatory level. Сюда тоже можно записывать, но предпочтительно использовать `--writable` для кросс-платформенности. |
 
 ## C функции
 
@@ -3468,13 +3468,13 @@ function host_or_ip(desync)
 ```
 function is_absolute_path(path)
 function append_path(path,file)
-function writeable_file_name(filename)
+function writable_file_name(filename)
 ```
 
 - is_absolute_path возвращает true, если путь path начинается с корня. Учитываются особенности путей CYGWIN.
 - append_path дописывает имя файла или каталога file к пути path, разделяя их знаком '/'
-- writeable_file_name возвращает filename, если filename содержит абсолютный путь или env `WRITEABLE` отсутствует.
-Иначе берется путь из env `WRITEABLE` и к нему дописывается имя файла filename через append_path.
+- writable_file_name возвращает filename, если filename содержит абсолютный путь или env `WRITABLE` отсутствует.
+Иначе берется путь из env `WRITABLE` и к нему дописывается имя файла filename через append_path.
 
 ## Чтение и запись файлов
 

@@ -121,7 +121,7 @@ bool tcp_synack_segment(const struct tcphdr *tcphdr);
 bool tcp_syn_segment(const struct tcphdr *tcphdr);
 
 
-bool make_writeable_dir();
+bool make_writable_dir();
 bool ensure_file_access(const char *filename);
 #ifdef __CYGWIN__
 extern uint32_t w_win32_error;

@@ -656,7 +656,7 @@ General parameters for all versions - nfqws2, dvtws2, winws2.
  --reasm-disable=[type[,type]]                          ; disable fragment reassembly for a list of payloads: tls_client_hello quic_initial. without arguments - disable reasm for everything.
 
 DESYNC ENGINE INIT:
- --writeable[=<dir_name>]                               ; create a directory for Lua with write permissions and store its path in the "WRITEABLE" env variable (only one directory)
+ --writable[=<dir_name>]                                ; create a directory for Lua with write permissions and store its path in the "WRITABLE" env variable (only one directory)
  --blob=<item_name>:[+ofs]@<filename>|0xHEX             ; load a binary file or hex string into the Lua variable <item_name>. +ofs specifies the offset from the start of the file
  --lua-init=@<filename>|<lua_text>                      ; execute Lua code from a string or file once at startup. supports gzipped files. automatically checks for "<filename>.gz"
  --lua-gc=<int>                                         ; Lua garbage collector invocation interval in seconds. 0 disables periodic calls.
@@ -1018,7 +1018,7 @@ Windows:
 - All `Se*` privileges are irrevocably removed from the token, except for `SeChangeNotifyPrivilege`.
 - A Job object is used to prohibit the creation of child processes and restrict desktop interaction - clipboard access, changing desktop settings, changing display settings, etc.
 
-There is a simple way to pass a writable directory to the Lua code using the `--writeable[=<dirname>]` parameter. `nfqws2` creates the directory and assigns permissions so that the Lua code can write files there, then passes the directory name in the `WRITEABLE` environment variable. If `dirname` is not specified, a directory is created within `%USERPROFILE%/AppData/LocalLow` on Windows.
+There is a simple way to pass a writable directory to the Lua code using the `--writable[=<dirname>]` parameter. `nfqws2` creates the directory and assigns permissions so that the Lua code can write files there, then passes the directory name in the `WRITABLE` environment variable. If `dirname` is not specified, a directory is created within `%USERPROFILE%/AppData/LocalLow` on Windows.
 
 On the Lua side, dangerous functions are removed: `os.execute`, `io.popen`, `package.loadlib`, and the `debug` module. On GitHub, `nfqws2` executables are built with a version of LuaJIT that excludes FFI.
 
@@ -1697,8 +1697,8 @@ Before executing `--lua-init`, the C code sets up base constants, blobs, and C f
 
 | env       | Purpose |
 | :-------- |:---------- |
-| WRITEABLE | A directory writable by Lua. Corresponds to the `--writeable` option. |
-| APPDATALOW | (Windows only) The AppData location for the low mandatory level. This is also writable, but using `--writeable` is preferred for cross-platform compatibility. |
+| WRITABLE | A directory writable by Lua. Corresponds to the `--writable` option. |
+| APPDATALOW | (Windows only) The AppData location for the low mandatory level. This is also writable, but using `--writable` is preferred for cross-platform compatibility. |
 
 ## C functions
 
@@ -3295,12 +3295,12 @@ function host_or_ip(desync)
 ```
 function is_absolute_path(path)
 function append_path(path, file)
-function writeable_file_name(filename)
+function writeble_file_name(filename)
 ```
 
 - `is_absolute_path` returns true if the path starts from the root. It accounts for CYGWIN path specifics.
 - `append_path` appends a file or directory name `file` to `path`, using '/' as a separator.
-- `writeable_file_name` returns `filename` if it contains an absolute path or if the `WRITEABLE` environment variable is not set. Otherwise, it retrieves the path from the `WRITEABLE` environment variable and appends the `filename` using `append_path`.
+- `writeble_file_name` returns `filename` if it contains an absolute path or if the `WRITABLE` environment variable is not set. Otherwise, it retrieves the path from the `WRITABLE` environment variable and appends the `filename` using `append_path`.
 
 ## Reading and writing Files
 

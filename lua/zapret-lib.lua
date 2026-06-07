@@ -1,4 +1,4 @@
-NFQWS2_COMPAT_VER_REQUIRED=5
+NFQWS2_COMPAT_VER_REQUIRED=6
 
 if NFQWS2_COMPAT_VER~=NFQWS2_COMPAT_VER_REQUIRED then
 	error("Incompatible NFQWS2_COMPAT_VER. Use pktws and lua scripts from the same release !")
@@ -1435,9 +1435,9 @@ end
 function append_path(path,file)
 	return string.sub(path,#path,#path)=='/' and path..file or path.."/"..file
 end
-function writeable_file_name(filename)
+function writable_file_name(filename)
 	if is_absolute_path(filename) then return filename end
-	local writedir = os.getenv("WRITEABLE")
+	local writedir = os.getenv("WRITABLE")
 	if not writedir then return filename end
 	return append_path(writedir, filename)
 end

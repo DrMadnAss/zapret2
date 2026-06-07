@@ -1866,7 +1866,7 @@ static void exithelp(void)
 		" --nlm-list[=all]\t\t\t\t\t; list Network List Manager (NLM) networks. connected only or all.\n"
 #endif
 		"\nDESYNC ENGINE INIT:\n"
-		" --writeable[=<dir_name>]\t\t\t\t; create writeable dir for LUA scripts and pass it in WRITEABLE env variable (only one dir possible)\n"
+		" --writable[=<dir_name>]\t\t\t\t; create writable dir for LUA scripts and pass it in WRITABLE env variable (only one dir possible)\n"
 		" --blob=<item_name>:[+ofs]@<filename>|0xHEX\t\t; load blob to LUA var <item_name>\n"
 		" --lua-init=@<filename>|<lua_text>\t\t\t; load LUA program from a file or string. if multiple parameters present order of execution is preserved. gzipped files are supported.\n"
 		" --lua-gc=<int>\t\t\t\t\t\t; forced garbage collection every N sec. default %u sec. triggers only when a packet arrives. 0 = disable.\n"
@@ -2003,7 +2003,7 @@ enum opt_indices {
 	IDX_SOCKARG,
 #endif
 
-	IDX_WRITEABLE,
+	IDX_WRITABLE,
 
 	IDX_BLOB,
 	IDX_LUA_INIT,
@@ -2107,7 +2107,7 @@ static const struct option long_options[] = {
 #elif defined(SO_USER_COOKIE)
 	[IDX_SOCKARG] = {"sockarg", required_argument, 0, 0},
 #endif
-	[IDX_WRITEABLE] = {"writeable", optional_argument, 0, 0},
+	[IDX_WRITABLE] = {"writable", optional_argument, 0, 0},
 	[IDX_BLOB] = {"blob", required_argument, 0, 0},
 	[IDX_LUA_INIT] = {"lua-init", required_argument, 0, 0},
 	[IDX_LUA_GC] = {"lua-gc", required_argument, 0, 0},
@@ -2519,18 +2519,18 @@ int main(int argc, char **argv)
 			}
 			break;
 #endif
-		case IDX_WRITEABLE:
-			params.writeable_dir_enable = true;
+		case IDX_WRITABLE:
+			params.writable_dir_enable = true;
 			if (optarg)
 			{
-				if (!realpath_any(optarg, params.writeable_dir))
+				if (!realpath_any(optarg, params.writable_dir))
 				{
 					DLOG_ERR("bad file '%s'\n",optarg);
 					exit_clean(1);
 				}
 			}
 			else
-				*params.writeable_dir = 0;
+				*params.writable_dir = 0;
 			break;
 
 		case IDX_BLOB:
@@ -3148,14 +3148,14 @@ int main(int argc, char **argv)
 	DLOG_CONDUP("we have %u user defined desync profile(s) and default low priority profile 0\n", desync_profile_count);
 	DLOG_CONDUP("we have %u user defined desync template(s)\n", desync_template_count);
 
-	if (params.writeable_dir_enable)
+	if (params.writable_dir_enable)
 	{
-		if (!make_writeable_dir())
+		if (!make_writable_dir())
 		{
-			DLOG_ERR("could not make writeable dir for LUA\n");
+			DLOG_ERR("could not make writable dir for LUA\n");
 			exit_clean(1);
 		}
-		DLOG("LUA writeable dir : %s\n", getenv("WRITEABLE"));
+		DLOG("LUA writable dir : %s\n", getenv("WRITABLE"));
 	}
 #ifndef __CYGWIN__
 	if (params.droproot)
