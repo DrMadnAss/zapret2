@@ -242,8 +242,8 @@ static int write_pidfile(FILE **Fpid)
 
 void NoInterceptLoop(void)
 {
-	uint64_t bt, bt_next;
-	useconds_t usec;
+	uint64_t bt, bt_next, bt_delta;
+	struct timespec ts;
 
 	if (params.timers)
 	{
@@ -256,8 +256,10 @@ void NoInterceptLoop(void)
 			bt = boottime_ms();
 			if (bt_next>bt)
 			{
-				usec = (useconds_t)(bt_next-bt)*1000U;
-				usleep(usec);
+				bt_delta = bt_next - bt;
+				ts.tv_sec = (time_t)(bt_delta/1000U);
+				ts.tv_nsec = bt_delta%1000U*1000000U;
+				nanosleep(&ts,NULL);
 				if (bQuit) goto quit;
 			}
 			ReloadCheck();
@@ -2557,11 +2559,14 @@ int main(int argc, char **argv)
 			}
 			break;
 		case IDX_LUA_GC:
-			params.lua_gc = atoi(optarg);
-			if (params.lua_gc<0)
 			{
-				DLOG_ERR("lua-gc must be >=0\n");
-				exit_clean(1);
+				int i = atoi(optarg);
+				if (params.lua_gc<0)
+				{
+					DLOG_ERR("lua-gc must be >=0\n");
+					exit_clean(1);
+				}
+				params.lua_gc = i*1000; // in msec
 			}
 			break;
 		case IDX_HOSTLIST:

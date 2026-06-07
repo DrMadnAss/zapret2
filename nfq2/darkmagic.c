@@ -1633,7 +1633,8 @@ static bool windivert_recv_exit(void)
 static bool windivert_recv_filter(HANDLE hFilter, uint8_t *packet, size_t *len, WINDIVERT_ADDRESS *wa, unsigned int *wa_count, uint64_t *bt_next)
 {
 	UINT recv_len;
-	DWORD rd,twait,tmax;
+	DWORD rd,twait;
+	uint64_t tmax;
 	unsigned int wac;
 	uint64_t bt;
 
@@ -1644,12 +1645,12 @@ static bool windivert_recv_filter(HANDLE hFilter, uint8_t *packet, size_t *len, 
 	{
 		if (!*bt_next) *bt_next = TimerPoolNext(params.timers, &params.timers_dirty);
 		bt = boottime_ms();
-		tmax = *bt_next>bt ? (DWORD)(*bt_next-bt) : 0;
+		tmax = *bt_next>bt ? *bt_next-bt : 0;
 		if (!tmax || params.timers_dirty)
 		{
 			*bt_next = TimerPoolRun(&params.timers, &params.timers_dirty, bt);
 			bt = boottime_ms();
-			tmax = *bt_next>bt ? (DWORD)(*bt_next-bt) : 0;
+			tmax = *bt_next>bt ? *bt_next-bt : 0;
 		}
 	}
 	else
@@ -1675,7 +1676,7 @@ static bool windivert_recv_filter(HANDLE hFilter, uint8_t *packet, size_t *len, 
 			{
 				if (params.timers)
 				{
-					twait = tmax>50 ? 50 : tmax;
+					twait = tmax>50 ? 50 : (DWORD)tmax;
 					tmax -= twait;
 				}
 				else
@@ -1689,7 +1690,7 @@ static bool windivert_recv_filter(HANDLE hFilter, uint8_t *packet, size_t *len, 
 					bt = boottime_ms();
 					*bt_next = TimerPoolRun(&params.timers, &params.timers_dirty, bt);
 					bt = boottime_ms();
-					tmax = *bt_next>bt ? (DWORD)(*bt_next-bt) : 0;
+					tmax = *bt_next>bt ? *bt_next-bt : 0;
 				}
 			}
 			if (!GetOverlappedResult(hFilter,&ovl,&rd,FALSE))

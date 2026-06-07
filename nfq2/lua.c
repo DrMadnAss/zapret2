@@ -4612,12 +4612,12 @@ void lua_dlog_error(void)
 }
 
 
-static time_t gc_time=0;
+static uint64_t gc_time=0;
 void lua_do_gc(void)
 {
 	if (params.lua_gc)
 	{
-		time_t now = time(NULL);
+		uint64_t now = boottime_ms();
 		if ((now - gc_time) >= params.lua_gc)
 		{
 			int kb1 = lua_gc(params.L, LUA_GCCOUNT, 0);

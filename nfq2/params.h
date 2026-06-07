@@ -196,7 +196,7 @@ struct params_s
 	timer_pool *timers;
 	bool timers_dirty; // changed something in timers
 
-	int lua_gc;
+	uint64_t lua_gc;
 	int ref_desync_ctx; // desync ctx userdata registry ref
 	lua_State *L;
 };

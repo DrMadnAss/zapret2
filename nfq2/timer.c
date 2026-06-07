@@ -100,9 +100,12 @@ uint64_t TimerPoolRun(timer_pool **pp, bool *dirty, uint64_t bt)
 	char *name;
 	const char *del;
 	unsigned int n;
-	uint64_t mintime=0x7FFFFFFFFFFFFFFF;
+	bool dirty_happened = false;
 
 	if (!bt) bt = boottime_ms();
+again:
+	uint64_t mintime=0x7FFFFFFFFFFFFFFF;
+	*dirty = false;
 	HASH_ITER(hh, *pp, elem, tmp)
 	{
 		if (bt >= elem->bt_next)
@@ -138,16 +141,16 @@ uint64_t TimerPoolRun(timer_pool **pp, bool *dirty, uint64_t bt)
 			}
 
 			free(name);
+
+			if (*dirty)
+			{
+				dirty_happened = true;
+				goto again; // they may have deleted or created any number of timers, HASH_ITER may fail or access invalid pointers - restart
+			}
 		}
-		if (elem)
-		{
-			if (elem->bt_next < mintime) mintime = elem->bt_next;
-		}
+		if (elem && (elem->bt_next < mintime)) mintime = elem->bt_next;
 	}
-	if (!*pp) return 0; // no timers
-	if (*dirty)
-		// something changed in the timer pool (deleted or added in the lua timer code)
-		// rescan all timers for mintime
-		mintime = TimerPoolNext(*pp, dirty);
+	if (!*pp) return 0; // no timers, no dirty
+	*dirty = dirty_happened;
 	return mintime;
 }
