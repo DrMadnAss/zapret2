@@ -298,3 +298,7 @@ v0.9.4.3
 * zapret-lib,zapret-antidpi: delay parameter in "send" desync function
 * zapret-lib: fix oob urp=b case in rawsend_dissect_segmented
 * nfqws2, zapret-lib: (LUA_COMPAT_VER=6) fix wrong spelling : WRITEABLE -> WRITABLE
+
+1.0.1
+
+* install_easy: do not use apk in openwrt if it doesn't have db in /lib/apk/db
