@@ -79,16 +79,16 @@ static bool TimerPoolRunTimer(timer_pool *p)
 }
 uint64_t TimerPoolNext(const timer_pool *p, bool *dirty)
 {
+	*dirty = false;
+	if (!p) return 0;
+
 	const timer_pool *elem, *tmp;
 	uint64_t mintime=0x7FFFFFFFFFFFFFFF;
-
-	if (!p) return 0;
 
 	HASH_ITER(hh, p, elem, tmp)
 	{
 		if (elem->bt_next < mintime) mintime = elem->bt_next;
 	}
-	*dirty = false;
 	return mintime;
 }
 uint64_t TimerPoolRun(timer_pool **pp, bool *dirty, uint64_t bt)
@@ -100,7 +100,6 @@ uint64_t TimerPoolRun(timer_pool **pp, bool *dirty, uint64_t bt)
 	char *name;
 	const char *del;
 	unsigned int n;
-	bool dirty_happened = false;
 
 	if (!bt) bt = boottime_ms();
 again:
@@ -143,14 +142,10 @@ again:
 			free(name);
 
 			if (*dirty)
-			{
-				dirty_happened = true;
 				goto again; // they may have deleted or created any number of timers, HASH_ITER may fail or access invalid pointers - restart
-			}
 		}
 		if (elem && (elem->bt_next < mintime)) mintime = elem->bt_next;
 	}
 	if (!*pp) return 0; // no timers, no dirty
-	*dirty = dirty_happened;
 	return mintime;
 }
